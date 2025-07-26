@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "781830849080",
+    "project_id": "strmlyreel",
+    "storage_bucket": "strmlyreel.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781830849080:android:f4cc7343747d158af61ccd",
+        "android_client_info": {
+          "package_name": "com.strmlyreel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781830849080-gvimhq5sateke10qgarc9on6koq9m389.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.strmlyreel",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "781830849080-jatv72imvqnrnqdqi3ekcjfi113onk6a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2wXrW7-t5BazAdkYYBxb2RvjPjVybPkI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781830849080-jatv72imvqnrnqdqi3ekcjfi113onk6a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

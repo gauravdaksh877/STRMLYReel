@@ -1,4 +1,6 @@
 import UIKit
+import Firebase
+import GoogleSignIn
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
@@ -6,7 +8,6 @@ import ReactAppDependencyProvider
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
-
   var reactNativeDelegate: ReactNativeDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
 
@@ -14,6 +15,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+    // Initialize Firebase
+    FirebaseApp.configure()
+    
     let delegate = ReactNativeDelegate()
     let factory = RCTReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
@@ -30,6 +34,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     )
 
     return true
+  }
+  
+  // Required for Google Sign-In
+  func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+  ) -> Bool {
+    return GIDSignIn.sharedInstance.handle(url)
   }
 }
 
