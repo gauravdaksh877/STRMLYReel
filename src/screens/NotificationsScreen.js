@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import fontStyles from '../Styles/fontStyles';
 
-export default function NotificationsScreen() {
+const NotificationsScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -29,19 +30,21 @@ const styles = StyleSheet.create({
   title: {
     color: '#fff',
     fontSize: 28,
-    fontWeight: 'bold',
     marginTop: 20,
     marginBottom: 10,
+    ...fontStyles.Montserrat_Bold,    
   },
   subtitle: {
     color: '#8E8E93',
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
+    ...fontStyles.Montserrat_Regular,  
   },
   comingSoon: {
     color: '#FF0050',
     fontSize: 14,
-    fontWeight: '600',
+    ...fontStyles.Montserrat_SemiBold, 
   },
 });
+export default NotificationsScreen;

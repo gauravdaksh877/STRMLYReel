@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,22 +6,29 @@ import {
   StyleSheet,
   Dimensions,
   Animated,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import fontStyles from '../Styles/fontStyles';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-export default function VideoItem({ video, isActive, onLike }) {
+const VideoItem = ({ video, isActive, onLike }) => {
   const [isMuted, setIsMuted] = useState(true);
   const [isLiked, setIsLiked] = useState(video.isLiked || false);
+  const [isPaused, setIsPaused] = useState(false);
   const likeAnimation = useRef(new Animated.Value(1)).current;
+  const videoRef = useRef(null);
+
+  // Get safe area insets
+  const insets = useSafeAreaInsets();
 
   const handleLike = () => {
     setIsLiked(!isLiked);
     onLike(video.id);
-    
-    // Animate like button
+
     Animated.sequence([
       Animated.timing(likeAnimation, {
         toValue: 1.3,
@@ -36,62 +43,73 @@ export default function VideoItem({ video, isActive, onLike }) {
     ]).start();
   };
 
+  const handlePressIn = () => {
+    setIsPaused(true);
+  };
+
+  const handlePressOut = () => {
+    setIsPaused(false);
+  };
+
   return (
-    <View style={styles.container}>
-      <Video
-        source={{ uri: video.uri }}
-        style={styles.video}
-        resizeMode="cover"
-        repeat
-        paused={!isActive}
-        muted={isMuted}
-        onError={(error) => console.log('Video error:', error)}
-      />
-      
-      {/* Overlay */}
-      <View style={styles.overlay}>
-        {/* Right side controls */}
-        <View style={styles.rightControls}>
-          <Animated.View style={{ transform: [{ scale: likeAnimation }] }}>
-            <TouchableOpacity style={styles.actionButton} onPress={handleLike}>
-              <Icon
-                name={isLiked ? 'favorite' : 'favorite-border'}
-                size={32}
-                color={isLiked ? '#FF0050' : '#fff'}
-              />
-              <Text style={styles.actionText}>{video.likes}</Text>
+    <TouchableWithoutFeedback onPressIn={handlePressIn} onPressOut={handlePressOut}>
+      <View style={styles.container}>
+        <Video
+          ref={videoRef}
+          source={{ uri: video.uri }}
+          style={styles.video}
+          resizeMode="cover"
+          repeat
+          paused={!isActive || isPaused}
+          muted={isMuted}
+          onError={error => console.log('Video error:', error)}
+        />
+
+       
+        {isPaused && (
+          <View style={styles.pauseOverlay}>
+            <Icon name="pause" size={60} color="#fff" />
+          </View>
+        )}
+
+       
+        <View style={styles.overlay} pointerEvents="box-none">
+         
+          <View style={[styles.rightControls, { bottom: 100 + insets.bottom }]}>
+            <Animated.View style={{ transform: [{ scale: likeAnimation }] }}>
+              <TouchableOpacity style={styles.actionButton} onPress={handleLike}>
+                <Icon
+                  name={isLiked ? 'favorite' : 'favorite-border'}
+                  size={32}
+                  color={isLiked ? '#FF0050' : '#fff'}
+                />
+                <Text style={styles.actionText}>{video.likes}</Text>
+              </TouchableOpacity>
+            </Animated.View>
+
+            <TouchableOpacity style={styles.actionButton}>
+              <Icon name="chat-bubble-outline" size={32} color="#fff" />
+              <Text style={styles.actionText}>12</Text>
             </TouchableOpacity>
-          </Animated.View>
-          
-          <TouchableOpacity style={styles.actionButton}>
-            <Icon name="chat-bubble-outline" size={32} color="#fff" />
-            <Text style={styles.actionText}>12</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.actionButton}>
-            <Icon name="share" size={32} color="#fff" />
-            <Text style={styles.actionText}>Share</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => setIsMuted(!isMuted)}
-          >
-            <Icon
-              name={isMuted ? 'volume-off' : 'volume-up'}
-              size={32}
-              color="#fff"
-            />
-          </TouchableOpacity>
-        </View>
-        
-        {/* Bottom info */}
-        <View style={styles.bottomInfo}>
-          <Text style={styles.username}>@{video.user}</Text>
-          <Text style={styles.description}>{video.description}</Text>
+
+            <TouchableOpacity style={styles.actionButton}>
+              <Icon name="share" size={32} color="#fff" />
+              <Text style={styles.actionText}>Share</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.actionButton} onPress={() => setIsMuted(!isMuted)}>
+              <Icon name={isMuted ? 'volume-off' : 'volume-up'} size={32} color="#fff" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Bottom info */}
+          <View style={[styles.bottomInfo, { paddingBottom: 120 + insets.bottom }]}>
+            <Text style={styles.username}>@{video.user}</Text>
+            <Text style={styles.description}>{video.description}</Text>
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -104,6 +122,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  pauseOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   overlay: {
     position: 'absolute',
     top: 0,
@@ -115,7 +139,6 @@ const styles = StyleSheet.create({
   rightControls: {
     position: 'absolute',
     right: 15,
-    bottom: 100,
     alignItems: 'center',
   },
   actionButton: {
@@ -126,22 +149,23 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     marginTop: 5,
-    fontWeight: '600',
+    ...fontStyles.Montserrat_Regular,
   },
   bottomInfo: {
     paddingHorizontal: 15,
-    paddingBottom: 100,
     paddingRight: 80,
   },
   username: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    ...fontStyles.Montserrat_Bold,
     marginBottom: 5,
   },
   description: {
     color: '#fff',
     fontSize: 14,
     lineHeight: 18,
+    ...fontStyles.Montserrat_Regular,
   },
 });
+export default VideoItem;

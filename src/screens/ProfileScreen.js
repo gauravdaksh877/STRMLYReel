@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -9,34 +9,44 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
+// import auth from '@react-native-firebase/auth';
+// import firestore from '@react-native-firebase/firestore';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import fontStyles from '../Styles/fontStyles';
 
-export default function ProfileScreen() {
-  const [userProfile, setUserProfile] = useState(null);
-  const currentUser = auth().currentUser;
+const ProfileScreen = ({ user, setUser }) => {
+  // const [userProfile, setUserProfile] = useState(null);
+  // const currentUser = auth().currentUser;
 
-  useEffect(() => {
-    if (currentUser) {
-      fetchUserProfile();
-    }
-  }, [currentUser]);
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     fetchUserProfile();
+  //   }
+  // }, [currentUser]);
 
-  const fetchUserProfile = async () => {
-    try {
-      const userDoc = await firestore()
-        .collection('users')
-        .doc(currentUser.uid)
-        .get();
+  // const fetchUserProfile = async () => {
+  //   try {
+  //     const userDoc = await firestore()
+  //       .collection('users')
+  //       .doc(currentUser.uid)
+  //       .get();
       
-      if (userDoc.exists) {
-        setUserProfile(userDoc.data());
-      }
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-    }
-  };
+  //     if (userDoc.exists) {
+  //       setUserProfile(userDoc.data());
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching user profile:', error);
+  //   }
+  // };
+  if (!user) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loading}>
+          <Text style={styles.loadingText}>Loading profile...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const handleLogout = () => {
     Alert.alert(
@@ -47,21 +57,18 @@ export default function ProfileScreen() {
         {
           text: 'Logout',
           style: 'destructive',
-          onPress: () => auth().signOut(),
+          onPress: () => setUser(null),
+          // onPress: () => auth().signOut(),
         },
       ]
     );
   };
 
-  if (!userProfile) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loading}>
-          <Text style={styles.loadingText}>Loading profile...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
+  
+  const defaultProfileImage = 'https://via.placeholder.com/120x120/FF0050/FFFFFF?text=' + 
+    (user.name ? user.name.charAt(0).toUpperCase() : 'U');
+
+  const profileImageUri = user.photoURL || defaultProfileImage;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -73,16 +80,18 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Profile Info */}
+        
         <View style={styles.profileSection}>
           <Image
-            source={{ uri: userProfile.photoURL || 'https://via.placeholder.com/120' }}
+            source={{ uri: profileImageUri }}
             style={styles.profileImage}
           />
-          <Text style={styles.displayName}>{userProfile.name}</Text>
-          <Text style={styles.email}>{userProfile.email}</Text>
+          <Text style={styles.displayName}>
+            {user.name || user.displayName || 'Unknown User'}
+          </Text>
+          <Text style={styles.email}>{user.email || 'No email'}</Text>
           
-          {/* Stats */}
+         
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
               <Text style={styles.statNumber}>0</Text>
@@ -135,6 +144,7 @@ export default function ProfileScreen() {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -170,11 +180,12 @@ const styles = StyleSheet.create({
     height: 120,
     borderRadius: 60,
     marginBottom: 15,
+    backgroundColor: '#333',
   },
   displayName: {
     color: '#fff',
     fontSize: 24,
-    fontWeight: 'bold',
+    ...fontStyles.Montserrat_Bold,
     marginBottom: 5,
   },
   email: {
@@ -193,7 +204,7 @@ const styles = StyleSheet.create({
   statNumber: {
     color: '#fff',
     fontSize: 20,
-    fontWeight: 'bold',
+    ...fontStyles.Montserrat_Bold,
   },
   statLabel: {
     color: '#8E8E93',
@@ -218,7 +229,7 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    ...fontStyles.Montserrat_SemiBold,
   },
   logoutButton: {
     flexDirection: 'row',
@@ -233,7 +244,7 @@ const styles = StyleSheet.create({
   logoutButtonText: {
     color: '#FF0050',
     fontSize: 16,
-    fontWeight: '600',
+    ...fontStyles.Montserrat_SemiBold,
     marginLeft: 5,
   },
   videosSection: {
@@ -259,7 +270,7 @@ const styles = StyleSheet.create({
   tabText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    ...fontStyles.Montserrat_SemiBold,
     marginLeft: 8,
   },
   inactiveTabText: {
@@ -272,7 +283,7 @@ const styles = StyleSheet.create({
   emptyText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: '600',
+    ...fontStyles.Montserrat_SemiBold,
     marginTop: 15,
   },
   emptySubtext: {
@@ -280,5 +291,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 5,
     textAlign: 'center',
+    ...fontStyles.Montserrat_Regular,
   },
 });
+export default ProfileScreen;

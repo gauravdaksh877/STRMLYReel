@@ -9,7 +9,7 @@ import NotificationsScreen from './NotificationsScreen';
 
 const Tab = createBottomTabNavigator();
 
-export default function TabNavigator() {
+const TabNavigator = ({ user, onLogout }) => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -47,7 +47,10 @@ export default function TabNavigator() {
       <Tab.Screen name="Discover" component={DiscoverScreen} />
       <Tab.Screen name="Upload" component={UploadScreen} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Profile">
+        {(props) => <ProfileScreen {...props} user={user} setUser={onLogout} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }
+export default TabNavigator;

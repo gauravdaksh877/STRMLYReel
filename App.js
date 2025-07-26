@@ -1,51 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ActivityIndicator } from 'react-native';
-import AppNavigator from './src/navigation/AppNavigator';
-import auth from '@react-native-firebase/auth';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 
+// Import navigation
+import AppNavigator from './src/navigation/AppNavigator';
+// import auth from '@react-native-firebase/auth';
 
 export default function App() {
-  const [initializing, setInitializing] = useState(true);
+  // const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged((firebaseUser) => {
-      setUser(firebaseUser);
-      if (initializing) setInitializing(false);
-    });
-    return unsubscribe; // Clean up the listener on unmount
-  }, [initializing]);
+  // useEffect(() => {
+  //   const unsubscribe = auth().onAuthStateChanged((firebaseUser) => {
+  //     setUser(firebaseUser);
+  //     if (initializing) setInitializing(false);
+  //   });
+  //   return unsubscribe; // Clean up the listener on unmount
+  // }, [initializing]);
 
-  if (initializing) {
-    return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  // if (initializing) {
+  //   return (
+  //     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
 
-  return <AppNavigator user={user} />;
+  const handleLogin = (userData) => {
+    setUser(userData);
+  };
+
+  return <AppNavigator user={user} onLogin={handleLogin} />;
 }
 
 const styles = StyleSheet.create({
-  container: {
+  loading: {
     flex: 1,
     justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
+    backgroundColor: '#000',
   },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    backgroundColor: '#fff',
+  loadingText: {
+    color: '#fff',
+    fontSize: 18,
   },
 });

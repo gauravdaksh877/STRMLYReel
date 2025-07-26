@@ -10,7 +10,7 @@ import VideoItem from '../components/VideoItem';
 
 const { height: screenHeight } = Dimensions.get('window');
 
-// Sample video data
+
 const SAMPLE_VIDEOS = [
   {
     id: '1',
@@ -54,7 +54,7 @@ const SAMPLE_VIDEOS = [
   },
 ];
 
-export default function HomeScreen() {
+const HomeScreen = () => {
   const [videos, setVideos] = useState(SAMPLE_VIDEOS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
@@ -103,9 +103,9 @@ export default function HomeScreen() {
     offset: screenHeight * index,
     index,
   })}
-  snapToInterval={screenHeight} // Add this for better snapping
-  snapToAlignment="start" // Add this for better alignment
-  decelerationRate="fast" // Makes scrolling feel more natural
+  snapToInterval={screenHeight} 
+  snapToAlignment="start" 
+  decelerationRate="fast" 
 />
     </SafeAreaView>
   );
@@ -117,3 +117,4 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
 });
+export default HomeScreen;
